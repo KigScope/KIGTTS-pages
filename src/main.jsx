@@ -1,9 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { CssBaseline, GlobalStyles, ThemeProvider } from '@mui/material';
-import '@fontsource/space-grotesk/400.css';
-import '@fontsource/space-grotesk/500.css';
-import '@fontsource/space-grotesk/700.css';
+import '@fontsource/google-sans/latin-400.css';
+import '@fontsource/google-sans/latin-500.css';
+import '@fontsource/google-sans/latin-700.css';
+import '@fontsource/material-symbols-sharp/400.css';
+import '@fontsource/noto-sans-sc/chinese-simplified-400.css';
+import '@fontsource/noto-sans-sc/chinese-simplified-500.css';
+import '@fontsource/noto-sans-sc/chinese-simplified-700.css';
 import App from './App';
 import { theme } from './theme';
 

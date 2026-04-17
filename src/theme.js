@@ -1,5 +1,15 @@
 import { alpha, createTheme } from '@mui/material/styles';
 
+const uiFontStack = [
+  '"Google Sans"',
+  '"Noto Sans SC"',
+  '"Source Han Sans SC"',
+  '"Microsoft YaHei"',
+  '"PingFang SC"',
+  '"Hiragino Sans GB"',
+  'sans-serif',
+].join(', ');
+
 export const theme = createTheme({
   palette: {
     mode: 'dark',
@@ -24,23 +34,19 @@ export const theme = createTheme({
     divider: alpha('#f5fbfb', 0.08),
   },
   typography: {
-    fontFamily:
-      '"Space Grotesk", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif',
+    fontFamily: uiFontStack,
     h1: {
-      fontFamily:
-        '"Space Grotesk", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif',
+      fontFamily: uiFontStack,
       fontWeight: 700,
       letterSpacing: '-0.04em',
     },
     h2: {
-      fontFamily:
-        '"Space Grotesk", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif',
+      fontFamily: uiFontStack,
       fontWeight: 700,
       letterSpacing: '-0.03em',
     },
     h3: {
-      fontFamily:
-        '"Space Grotesk", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif',
+      fontFamily: uiFontStack,
       fontWeight: 600,
       letterSpacing: '-0.02em',
     },
