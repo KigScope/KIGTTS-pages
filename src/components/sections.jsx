@@ -1,20 +1,9 @@
-import AndroidRoundedIcon from '@mui/icons-material/AndroidRounded';
-import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
-import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
-import GraphicEqRoundedIcon from '@mui/icons-material/GraphicEqRounded';
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import LaptopMacRoundedIcon from '@mui/icons-material/LaptopMacRounded';
-import QrCode2RoundedIcon from '@mui/icons-material/QrCode2Rounded';
-import RocketLaunchRoundedIcon from '@mui/icons-material/RocketLaunchRounded';
-import SettingsSuggestRoundedIcon from '@mui/icons-material/SettingsSuggestRounded';
 import {
   Box,
   Button,
-  Card,
-  CardContent,
-  Chip,
   Divider,
   Grid,
+  Icon,
   Stack,
   Typography,
 } from '@mui/material';
@@ -27,551 +16,637 @@ export const navItems = [
   {
     id: 'home',
     label: '首页',
-    caption: 'Overview',
-    icon: HomeRoundedIcon,
+    caption: 'Home',
+    icon: 'home',
   },
   {
     id: 'about',
     label: '介绍',
-    caption: 'MD2',
-    icon: GraphicEqRoundedIcon,
+    caption: 'About',
+    icon: 'graphic_eq',
   },
   {
     id: 'download',
     label: '下载',
-    caption: 'Assets',
-    icon: DownloadRoundedIcon,
+    caption: 'Download',
+    icon: 'download',
   },
   {
     id: 'lab',
     label: '实验',
-    caption: 'Beta',
-    icon: SettingsSuggestRoundedIcon,
+    caption: 'Lab',
+    icon: 'tune',
   },
 ];
 
-const featureChips = ['实时字幕', '双端适配', '低干扰视觉', '静态部署'];
+const betaLines = ['尝试由Flutter构建', '的Beta版本'];
 
-const installSteps = [
-  '将 APK 下载链接替换为正式地址后即可直接上线到 GitHub Pages 导航页。',
-  '训练器入口保留大尺寸按钮区，适合挂载到独立下载页或网盘地址。',
-  '整站不依赖服务端，构建后的 dist 目录可以直接作为静态资源发布。',
+const downloadNotes = [
+  '手机扫描二维码进行下载',
+  '训练器与 APK 可分别接真实链接',
+  '整个站点已经适配 GitHub Pages 静态部署',
 ];
 
-const betaNotes = [
-  'Flutter Beta 界面延续当前深色流光主题，方便两端品牌统一。',
-  '移动端导航自动折叠为顶栏与抽屉，避免左侧 rail 挤压主内容。',
-  '下载区和实验区可以后续接入真实链接，不影响现阶段静态展示。',
+const labItems = [
+  '保留深色流光气质，但减少与主页面抢视觉。',
+  '方便挂 Beta 下载、更新日志和实验说明。',
+  '移动端沿用抽屉导航，不挤压主内容宽度。',
 ];
 
-function SectionFrame({ eyebrow, title, description, children }) {
+const md2SurfaceShadow = '0 1px 2px rgba(0,0,0,0.28), 0 6px 18px rgba(0,0,0,0.16)';
+const md2RaisedShadow = '0 2px 4px rgba(0,0,0,0.28), 0 10px 24px rgba(0,0,0,0.2)';
+const md2Surface = {
+  backgroundColor: '#2f3132',
+  border: `1px solid ${alpha('#ffffff', 0.04)}`,
+  borderRadius: 1,
+  boxShadow: md2SurfaceShadow,
+};
+const md2Button = {
+  minHeight: 72,
+  justifyContent: 'flex-start',
+  px: 2.8,
+  borderRadius: 1,
+  fontSize: { xs: '1.18rem', md: '1.28rem' },
+  fontWeight: 500,
+  color: '#f5fbfb',
+  backgroundColor: '#038387',
+  boxShadow: '0 2px 4px rgba(0,0,0,0.28), 0 6px 14px rgba(0,0,0,0.18)',
+  '&:hover': {
+    backgroundColor: '#04959a',
+    boxShadow: '0 4px 8px rgba(0,0,0,0.28), 0 8px 18px rgba(0,0,0,0.22)',
+  },
+};
+
+export function SymbolIcon({ name, size = 24, sx }) {
   return (
-    <Stack spacing={3}>
-      <Box>
-        <Typography
-          variant="overline"
+    <Icon
+      baseClassName="material-symbols-sharp"
+      sx={{
+        fontSize: size,
+        lineHeight: 1,
+        fontVariationSettings: '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24',
+        ...sx,
+      }}
+    >
+      {name}
+    </Icon>
+  );
+}
+
+function PseudoQr() {
+  return (
+    <Box
+      sx={{
+        width: 168,
+        height: 168,
+        p: 1.25,
+        backgroundColor: '#fbfbfb',
+        borderRadius: 0.5,
+        boxShadow: '0 1px 2px rgba(0,0,0,0.16)',
+      }}
+    >
+      <Box
+        sx={{
+          width: '100%',
+          height: '100%',
+          backgroundColor: '#ffffff',
+          backgroundImage: `
+            linear-gradient(90deg, #111 0 14%, transparent 14% 21%, #111 21% 35%, transparent 35% 43%, #111 43% 49%, transparent 49% 57%, #111 57% 74%, transparent 74% 80%, #111 80% 100%),
+            linear-gradient(#111 0 12%, transparent 12% 18%, #111 18% 31%, transparent 31% 40%, #111 40% 48%, transparent 48% 61%, #111 61% 73%, transparent 73% 84%, #111 84% 100%)
+          `,
+          backgroundSize: '100% 100%',
+          position: 'relative',
+          overflow: 'hidden',
+          '&::before, &::after': {
+            content: '""',
+            position: 'absolute',
+            width: 38,
+            height: 38,
+            border: '8px solid #111',
+            backgroundColor: '#fff',
+          },
+          '&::before': {
+            top: 10,
+            left: 10,
+          },
+          '&::after': {
+            top: 10,
+            right: 10,
+          },
+        }}
+      >
+        <Box
           sx={{
-            color: 'primary.light',
-            letterSpacing: '0.22em',
+            position: 'absolute',
+            left: 10,
+            bottom: 10,
+            width: 38,
+            height: 38,
+            border: '8px solid #111',
+            backgroundColor: '#fff',
           }}
-        >
-          {eyebrow}
-        </Typography>
-        <Typography
-          variant="h2"
-          sx={{
-            mt: 1.2,
-            maxWidth: 820,
-            fontSize: { xs: '2.35rem', md: '3.25rem' },
-            lineHeight: 0.96,
-          }}
-        >
-          {title}
-        </Typography>
-        {description ? (
-          <Typography
-            variant="body1"
-            sx={{
-              mt: 2,
-              maxWidth: 720,
-              color: 'text.secondary',
-              fontSize: { xs: '0.98rem', md: '1.06rem' },
-              lineHeight: 1.8,
-            }}
-          >
-            {description}
-          </Typography>
-        ) : null}
+        />
       </Box>
-      {children}
-    </Stack>
+    </Box>
+  );
+}
+
+function BetaBubble({ onSelect, compact = false }) {
+  return (
+    <Box
+      sx={{
+        position: compact ? 'relative' : 'absolute',
+        right: compact ? 'auto' : { lg: 42, xl: 56 },
+        top: compact ? 'auto' : { lg: 34, xl: 46 },
+        width: compact ? '100%' : { lg: 320, xl: 354 },
+        minHeight: compact ? 'auto' : 190,
+        px: { xs: 3, md: 3.2 },
+        py: { xs: 2.6, md: 3 },
+        borderRadius: '28px',
+        color: '#0b1819',
+        background: 'linear-gradient(180deg, #92dde0 0%, #82d4d8 100%)',
+        boxShadow: '0 8px 24px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.18)',
+        overflow: 'hidden',
+        '&::before, &::after': {
+          content: '""',
+          position: 'absolute',
+          borderRadius: '48%',
+          backgroundColor: alpha('#d6f5f6', 0.56),
+        },
+        '&::before': {
+          width: 92,
+          height: 92,
+          top: -20,
+          right: -12,
+        },
+        '&::after': {
+          width: 76,
+          height: 76,
+          bottom: -14,
+          left: -12,
+        },
+      }}
+    >
+      <Box
+        sx={{
+          position: 'absolute',
+          left: 18,
+          right: 18,
+          bottom: 18,
+          top: '50%',
+          borderRadius: '18px',
+          background: `
+            radial-gradient(circle at 16% 22%, ${alpha('#117d80', 0.24)} 0 22%, transparent 22%),
+            radial-gradient(circle at 100% 10%, ${alpha('#d5f3f4', 0.55)} 0 20%, transparent 20%),
+            radial-gradient(circle at 84% 100%, ${alpha('#149ea2', 0.18)} 0 26%, transparent 26%)
+          `,
+        }}
+      />
+      <Stack
+        spacing={2.2}
+        sx={{
+          position: 'relative',
+          zIndex: 1,
+          alignItems: 'center',
+          textAlign: 'center',
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: { xs: '1.05rem', md: '1.1rem' },
+            lineHeight: 1.45,
+            fontWeight: 500,
+          }}
+        >
+          {betaLines.map((line) => (
+            <Box key={line} component="span" sx={{ display: 'block' }}>
+              {line}
+            </Box>
+          ))}
+        </Typography>
+        <Button
+          onClick={() => onSelect('lab')}
+          sx={{
+            minWidth: 188,
+            minHeight: 52,
+            px: 4,
+            borderRadius: 999,
+            color: '#f5fbfb',
+            backgroundColor: '#0e7f83',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.18)',
+            fontSize: '1rem',
+            '&:hover': {
+              backgroundColor: '#0f8d92',
+            },
+          }}
+        >
+          前往Beta页面
+        </Button>
+      </Stack>
+    </Box>
+  );
+}
+
+function DownloadPanel() {
+  return (
+    <Box
+      sx={{
+        flex: 1,
+        minHeight: 244,
+        px: { xs: 2.2, md: 2.5 },
+        py: { xs: 2.2, md: 2.5 },
+        ...md2Surface,
+      }}
+    >
+      <Stack spacing={1.8} sx={{ height: '100%' }}>
+        <Button
+          fullWidth
+          startIcon={<SymbolIcon name="android" size={28} />}
+          sx={{
+            ...md2Button,
+          }}
+        >
+          下载APK
+        </Button>
+        <Button
+          fullWidth
+          startIcon={<SymbolIcon name="laptop_mac" size={28} />}
+          sx={{
+            ...md2Button,
+          }}
+        >
+          下载训练器
+        </Button>
+      </Stack>
+    </Box>
+  );
+}
+
+function QrPanel() {
+  return (
+    <Box
+      sx={{
+        width: { xs: '100%', sm: 230 },
+        minWidth: { sm: 230 },
+        minHeight: 244,
+        px: { xs: 2.2, md: 2.5 },
+        py: { xs: 2.2, md: 2.5 },
+        ...md2Surface,
+      }}
+    >
+      <Stack spacing={1.8} alignItems="center">
+        <PseudoQr />
+        <Typography
+          variant="body2"
+          sx={{
+            textAlign: 'center',
+            color: alpha('#f5fbfb', 0.64),
+            fontSize: '0.92rem',
+            lineHeight: 1.55,
+          }}
+        >
+          {downloadNotes[0]}
+        </Typography>
+      </Stack>
+    </Box>
+  );
+}
+
+function HomeRightBlock({ onSelect }) {
+  return (
+    <Box
+      sx={{
+        position: { xs: 'relative', lg: 'absolute' },
+        right: { lg: 58, xl: 74 },
+        top: { lg: '50%' },
+        transform: { lg: 'translateY(-8%)' },
+        width: { xs: '100%', lg: 502, xl: 536 },
+        mt: { xs: 2, lg: 0 },
+      }}
+    >
+      <Box component="img" src={lhtstudioLogo} alt="LHT Studio" sx={{ width: { xs: 174, md: 188 } }} />
+      <Box
+        component="img"
+        src={logoWhite}
+        alt="KIGTTS"
+        sx={{
+          mt: 1.5,
+          width: '100%',
+          maxWidth: 474,
+        }}
+      />
+      <Typography
+        sx={{
+          mt: 2,
+          fontSize: { xs: '2rem', md: '2.6rem', xl: '2.9rem' },
+          lineHeight: 1.18,
+          letterSpacing: '0.03em',
+          color: '#f1f4f4',
+          fontWeight: 300,
+        }}
+      >
+        变娃交流无阻碍
+      </Typography>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        spacing={2}
+        sx={{
+          mt: { xs: 4, md: 5.2 },
+          alignItems: 'stretch',
+        }}
+      >
+        <QrPanel />
+        <DownloadPanel />
+      </Stack>
+    </Box>
   );
 }
 
 export function HomeSection({ onSelect }) {
   return (
-    <SectionFrame
-      eyebrow="KIGTTS STUDIO"
-      title="让 KIGTTS 在桌面与移动端都保持同一种冷静、明亮、可触达的节奏。"
-      description="主界面延续你给的版式方向：左侧是主视觉和设备截图，右侧聚焦品牌、下载入口与实验版 CTA。整个首屏保持低照度黑绿基底，再用缓慢流光把注意力推向产品。"
-    >
-      <Grid container spacing={{ xs: 3, lg: 4 }} alignItems="stretch">
-        <Grid size={{ xs: 12, lg: 7 }}>
-          <Card
+    <Box>
+      <Box
+        sx={{
+          position: 'relative',
+          minHeight: { xs: 'auto', lg: '100svh' },
+          px: { xs: 2.5, sm: 3.4, lg: 5.4, xl: 6.4 },
+          py: { xs: 3, lg: 3.8 },
+          scrollSnapAlign: 'start',
+        }}
+      >
+        <Box
+          component="img"
+          src={lhtstudioLogo}
+          alt="LHT Studio"
+          sx={{
+            width: { xs: 170, md: 200 },
+            mb: { xs: 2.8, lg: 0 },
+          }}
+        />
+        <Box
+          sx={{
+            display: { xs: 'block', lg: 'none' },
+          }}
+        >
+          <BetaBubble onSelect={onSelect} compact />
+        </Box>
+        <Box
+          sx={{
+            display: { xs: 'block', lg: 'none' },
+            mt: 3.2,
+          }}
+        >
+          <Box
+            component="img"
+            src={heroShot}
+            alt="KIGTTS 视觉主体"
             sx={{
-              minHeight: { xs: 380, md: 540 },
-              overflow: 'hidden',
-              position: 'relative',
-              borderRadius: { xs: 5, md: 7 },
+              width: '100%',
+              display: 'block',
+              filter: 'drop-shadow(0 18px 34px rgba(0,0,0,0.24))',
+            }}
+          />
+        </Box>
+        <Box
+          sx={{
+            display: { xs: 'none', lg: 'block' },
+            position: 'absolute',
+            left: { lg: 34, xl: 56 },
+            top: { lg: 72, xl: 84 },
+            width: { lg: 820, xl: 910 },
+            pointerEvents: 'none',
+            zIndex: 0,
+          }}
+        >
+          <Box
+            component="img"
+            src={heroShot}
+            alt="KIGTTS 视觉主体"
+            sx={{
+              width: '100%',
+              display: 'block',
+              filter: 'drop-shadow(0 18px 34px rgba(0,0,0,0.26))',
+            }}
+          />
+        </Box>
+        <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
+          <BetaBubble onSelect={onSelect} />
+        </Box>
+        <HomeRightBlock onSelect={onSelect} />
+      </Box>
+      <Box
+        sx={{
+          px: { xs: 2.5, sm: 3.4, lg: 5.4, xl: 6.4 },
+          pb: { xs: 3.2, lg: 5.4 },
+          scrollSnapAlign: 'start',
+        }}
+      >
+        <Box
+          sx={{
+            width: { xs: '100%', lg: '72%', xl: '68%' },
+            minHeight: { xs: 360, lg: 440 },
+            px: { xs: 3, md: 4.8 },
+            py: { xs: 4.2, md: 5.2 },
+            ...md2Surface,
+            boxShadow: md2RaisedShadow,
+          }}
+        >
+          <Typography
+            sx={{
+              color: '#f5f7f7',
+              fontSize: { xs: '1.55rem', md: '2rem' },
+              lineHeight: 1.3,
+              fontWeight: 400,
             }}
           >
-            <Box
-              component="img"
-              src={heroShot}
-              alt="KIGTTS 产品主视觉"
-              sx={{
-                width: '100%',
-                height: '100%',
-                minHeight: { xs: 380, md: 540 },
-                objectFit: 'cover',
-                objectPosition: { xs: '42% center', md: 'center center' },
-                filter: 'saturate(1.05) contrast(1.02)',
-              }}
-            />
-            <Stack
-              direction="row"
-              spacing={1}
-              flexWrap="wrap"
-              useFlexGap
-              sx={{
-                position: 'absolute',
-                top: { xs: 18, md: 24 },
-                left: { xs: 18, md: 24 },
-                right: { xs: 18, md: 24 },
-              }}
-            >
-              {featureChips.map((item) => (
-                <Chip
-                  key={item}
-                  label={item}
-                  sx={{
-                    color: '#f5fbfb',
-                    backgroundColor: alpha('#071314', 0.72),
-                    backdropFilter: 'blur(18px)',
-                  }}
-                />
-              ))}
-            </Stack>
-          </Card>
-        </Grid>
-        <Grid size={{ xs: 12, lg: 5 }}>
-          <Stack spacing={3.2} sx={{ height: '100%' }}>
-            <Card
-              sx={{
-                borderRadius: { xs: 5, md: 7 },
-                backgroundColor: alpha('#8de8ea', 0.84),
-                color: '#082527',
-              }}
-            >
-              <CardContent sx={{ p: { xs: 3, md: 3.4 } }}>
-                <Stack spacing={2}>
-                  <Typography variant="h6" sx={{ fontWeight: 600, maxWidth: 280 }}>
-                    尝试由 Flutter 构建的 Beta 版本
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    endIcon={<ArrowForwardRoundedIcon />}
-                    onClick={() => onSelect('lab')}
-                    sx={{
-                      alignSelf: 'flex-start',
-                      background: 'linear-gradient(135deg, #03777b 0%, #0a9498 100%)',
-                    }}
-                  >
-                    前往 Beta 页面
-                  </Button>
-                </Stack>
-              </CardContent>
-            </Card>
-            <Card
-              sx={{
-                flex: 1,
-                borderRadius: { xs: 5, md: 7 },
-                overflow: 'hidden',
-                position: 'relative',
-              }}
-            >
-              <CardContent
-                sx={{
-                  p: { xs: 3, md: 4 },
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <Stack spacing={2.2}>
-                  <Box
-                    component="img"
-                    src={lhtstudioLogo}
-                    alt="LHT Studio"
-                    sx={{
-                      width: { xs: 160, md: 190 },
-                      opacity: 0.92,
-                    }}
-                  />
-                  <Box
-                    component="img"
-                    src={logoWhite}
-                    alt="KIGTTS"
-                    sx={{
-                      width: { xs: '70%', sm: '58%', xl: '76%' },
-                      maxWidth: 420,
-                    }}
-                  />
-                  <Typography
-                    variant="h3"
-                    sx={{
-                      fontWeight: 500,
-                      color: alpha('#f5fbfb', 0.94),
-                      fontSize: { xs: '1.4rem', md: '2rem' },
-                    }}
-                  >
-                    变娃交流无阻碍
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      maxWidth: 520,
-                      color: 'text.secondary',
-                      lineHeight: 1.8,
-                    }}
-                  >
-                    展示页采用相对路径打包，适合直接发布为 GitHub Pages。当前 CTA
-                    已留出 APK、训练器和实验版入口位，后续只需要替换链接常量即可。
-                  </Typography>
-                </Stack>
-                <Grid container spacing={2}>
-                  <Grid size={{ xs: 12, sm: 6 }}>
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      startIcon={<AndroidRoundedIcon />}
-                      onClick={() => onSelect('download')}
-                    >
-                      下载 APK
-                    </Button>
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6 }}>
-                    <Button
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<LaptopMacRoundedIcon />}
-                      onClick={() => onSelect('download')}
-                    >
-                      下载训练器
-                    </Button>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
-          </Stack>
-        </Grid>
-      </Grid>
-    </SectionFrame>
+            这是 MD2 风格的介绍页，后续可以接功能说明、更新日志和安装引导。
+          </Typography>
+        </Box>
+      </Box>
+    </Box>
   );
 }
 
 export function AboutSection() {
   return (
-    <SectionFrame
-      eyebrow="MD2 STYLE"
-      title="这是 MD2 风格的介绍页，保留大留白和高对比信息块，让内容自己发声。"
-      description="这一页刻意比首页更克制：把视觉能量收回到中央信息面板，只留下少量说明、特性与设计原则，适合放产品概念、使用流程或者版本说明。"
+    <Box
+      sx={{
+        minHeight: { xs: 560, lg: 'calc(100svh - 90px)' },
+        px: { xs: 2.5, sm: 3.6, lg: 6.4 },
+        py: { xs: 3.2, lg: 5.4 },
+        display: 'grid',
+        placeItems: 'center',
+      }}
     >
-      <Card
+      <Box
         sx={{
-          minHeight: { xs: 460, md: 600 },
-          borderRadius: { xs: 5, md: 7 },
-          overflow: 'hidden',
+          width: { xs: '100%', lg: '74%', xl: '68%' },
+          minHeight: { xs: 420, md: 520, lg: 560 },
+          ...md2Surface,
+          boxShadow: md2RaisedShadow,
+          px: { xs: 3.2, md: 5.6 },
+          pt: { xs: 7, md: 8.5 },
         }}
       >
-        <CardContent
+        <Typography
           sx={{
-            p: { xs: 3, md: 5 },
-            height: '100%',
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', lg: '1.1fr 0.9fr' },
-            gap: { xs: 4, lg: 5 },
-            alignItems: 'stretch',
+            textAlign: 'center',
+            color: '#f5f7f7',
+            fontSize: { xs: '1.55rem', md: '2.05rem' },
+            fontWeight: 400,
+            letterSpacing: '0.01em',
           }}
         >
-          <Stack justifyContent="space-between" spacing={3}>
-            <Stack spacing={2.5}>
-              <Typography
-                variant="h3"
-                sx={{
-                  maxWidth: 720,
-                  lineHeight: 1.08,
-                  fontSize: { xs: '1.9rem', md: '2.8rem' },
-                }}
-              >
-                把复杂交互收进同一块沉稳平面里，让品牌、功能和入口保持同一套视觉语言。
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{ maxWidth: 640, color: 'text.secondary', lineHeight: 1.9 }}
-              >
-                MD2 页面不再重复首页的大图，而是把视觉重心落在内容容器本身。适合补充说明：
-                功能定位、设备形态、字幕流与训练器关系，或者未来 Beta 规划。
-              </Typography>
-            </Stack>
-            <Stack direction="row" spacing={1.2} flexWrap="wrap" useFlexGap>
-              {['单一主面板', '高留白', '统一色温', '弱装饰强层级'].map((item) => (
-                <Chip key={item} label={item} />
-              ))}
-            </Stack>
-          </Stack>
-          <Card
-            sx={{
-              borderRadius: 5,
-              backgroundColor: alpha('#071314', 0.7),
-            }}
-          >
-            <CardContent sx={{ p: { xs: 3, md: 3.5 }, height: '100%' }}>
-              <Stack divider={<Divider flexItem />} spacing={3} sx={{ height: '100%' }}>
-                <Box>
-                  <Typography variant="overline" sx={{ color: 'primary.light' }}>
-                    页面原则
-                  </Typography>
-                  <Typography variant="body1" sx={{ mt: 1.2, color: 'text.secondary' }}>
-                    大面积深色承载信息，亮色只出现在关键动作、品牌线索和状态提示。
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant="overline" sx={{ color: 'primary.light' }}>
-                    交互动效
-                  </Typography>
-                  <Typography variant="body1" sx={{ mt: 1.2, color: 'text.secondary' }}>
-                    流光缓慢漂移，鼠标光晕落在指针下沿，移动端则保留整体氛围但不依赖悬停。
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant="overline" sx={{ color: 'primary.light' }}>
-                    适配方式
-                  </Typography>
-                  <Typography variant="body1" sx={{ mt: 1.2, color: 'text.secondary' }}>
-                    宽屏使用左侧 rail；当宽度不足或进入触控场景时，切到顶部栏和抽屉。
-                  </Typography>
-                </Box>
-              </Stack>
-            </CardContent>
-          </Card>
-        </CardContent>
-      </Card>
-    </SectionFrame>
+          这是MD2风格的介绍页面，随便加些什么
+        </Typography>
+      </Box>
+    </Box>
   );
 }
 
-export function DownloadSection({ onSelect }) {
+export function DownloadSection() {
   return (
-    <SectionFrame
-      eyebrow="DOWNLOAD HUB"
-      title="下载区保留大按钮、明确步骤和静态托管说明，方便你后续直接接真实地址。"
-      description="现在这页的按钮是静态入口位。你后续只要把按钮常量替换成正式 APK、训练器和 Beta 链接，不需要改布局。"
+    <Box
+      sx={{
+        minHeight: { xs: 560, lg: 'calc(100svh - 90px)' },
+        px: { xs: 2.5, sm: 3.6, lg: 5.8 },
+        py: { xs: 3.2, lg: 4.4 },
+      }}
     >
-      <Grid container spacing={{ xs: 3, lg: 4 }}>
-        <Grid size={{ xs: 12, lg: 7 }}>
-          <Card sx={{ borderRadius: { xs: 5, md: 7 } }}>
-            <CardContent sx={{ p: { xs: 3, md: 4 } }}>
-              <Stack spacing={3}>
-                <Typography variant="h4" sx={{ fontSize: { xs: '1.6rem', md: '2.2rem' } }}>
-                  静态部署准备已经就位
-                </Typography>
-                <Stack spacing={2.2}>
-                  {installSteps.map((item, index) => (
-                    <Box key={item} sx={{ display: 'flex', gap: 2 }}>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          width: 34,
-                          flexShrink: 0,
-                          color: 'primary.light',
-                          fontFamily: '"Space Grotesk", "Noto Sans SC", sans-serif',
-                        }}
-                      >
-                        0{index + 1}
-                      </Typography>
-                      <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.85 }}>
-                        {item}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Stack>
-                <Button
-                  variant="outlined"
-                  endIcon={<ArrowForwardRoundedIcon />}
-                  onClick={() => onSelect('lab')}
-                  sx={{ alignSelf: 'flex-start' }}
-                >
-                  查看实验版入口
-                </Button>
-              </Stack>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid size={{ xs: 12, lg: 5 }}>
-          <Stack spacing={2.5}>
-            <Card sx={{ borderRadius: 5 }}>
-              <CardContent sx={{ p: 3 }}>
-                <Stack spacing={2.2}>
-                  <Stack direction="row" spacing={1.5} alignItems="center">
-                    <QrCode2RoundedIcon color="primary" />
-                    <Typography variant="h6">扫码位 / 下载二维码</Typography>
-                  </Stack>
-                  <Box
-                    sx={{
-                      display: 'grid',
-                      placeItems: 'center',
-                      minHeight: 210,
-                      borderRadius: 4,
-                      background: `
-                        linear-gradient(135deg, ${alpha('#ffffff', 0.04)} 0%, ${alpha(
-                          '#038387',
-                          0.22,
-                        )} 100%)
-                      `,
-                      border: `1px solid ${alpha('#f5fbfb', 0.08)}`,
-                    }}
-                  >
-                    <Box
-                      component="img"
-                      src={logoWhite}
-                      alt="KIGTTS Logo"
-                      sx={{ width: '74%', maxWidth: 210, opacity: 0.96 }}
-                    />
-                  </Box>
-                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    当前仓库没有二维码素材，所以先用品牌标记占位；后续替换为正式二维码即可。
+      <Typography sx={{ color: alpha('#ffffff', 0.82), fontSize: '0.9rem', letterSpacing: '0.18em' }}>
+        DOWNLOAD
+      </Typography>
+      <Typography
+        sx={{
+          mt: 1.8,
+          maxWidth: 680,
+          fontSize: { xs: '2rem', md: '2.7rem' },
+          lineHeight: 1.1,
+          color: '#f5f7f7',
+        }}
+      >
+        下载区保持跟首页同一套块面逻辑，只把重点压到二维码和按钮入口。
+      </Typography>
+      <Grid container spacing={3} sx={{ mt: 3.2 }}>
+        <Grid size={{ xs: 12, lg: 7.2 }}>
+          <Box
+            sx={{
+              minHeight: 360,
+              p: { xs: 2.8, md: 3.6 },
+              ...md2Surface,
+            }}
+          >
+            <Stack spacing={2.4}>
+              {downloadNotes.map((item, index) => (
+                <Box key={item} sx={{ display: 'flex', gap: 2 }}>
+                  <Typography sx={{ minWidth: 34, color: '#79d6d9', fontSize: '1.2rem' }}>
+                    0{index + 1}
                   </Typography>
-                </Stack>
-              </CardContent>
-            </Card>
-            <Grid container spacing={2}>
-              <Grid size={{ xs: 12 }}>
-                <Button fullWidth variant="contained" startIcon={<AndroidRoundedIcon />}>
-                  APK 下载位
-                </Button>
-              </Grid>
-              <Grid size={{ xs: 12 }}>
-                <Button fullWidth variant="outlined" startIcon={<LaptopMacRoundedIcon />}>
-                  训练器下载位
-                </Button>
-              </Grid>
-            </Grid>
+                  <Typography sx={{ color: alpha('#ffffff', 0.76), lineHeight: 1.8 }}>{item}</Typography>
+                </Box>
+              ))}
+            </Stack>
+          </Box>
+        </Grid>
+        <Grid size={{ xs: 12, lg: 4.8 }}>
+          <Stack direction={{ xs: 'column', sm: 'row', lg: 'column' }} spacing={2.2}>
+            <QrPanel />
+            <DownloadPanel />
           </Stack>
         </Grid>
       </Grid>
-    </SectionFrame>
+    </Box>
   );
 }
 
 export function LabSection() {
   return (
-    <SectionFrame
-      eyebrow="BETA FLOW"
-      title="实验页专门留给 Flutter Beta 或后续功能试验，页面更偏状态提示与路线图。"
-      description="这一屏把 Beta、设计动机和接下来可扩展的位置集中到一起，适合承接外链、版本说明或单独的实验下载入口。"
+    <Box
+      sx={{
+        minHeight: { xs: 560, lg: 'calc(100svh - 90px)' },
+        px: { xs: 2.5, sm: 3.6, lg: 5.8 },
+        py: { xs: 3.2, lg: 4.4 },
+      }}
     >
-      <Grid container spacing={{ xs: 3, lg: 4 }}>
-        <Grid size={{ xs: 12, lg: 7 }}>
-          <Card
+      <Typography sx={{ color: alpha('#ffffff', 0.82), fontSize: '0.9rem', letterSpacing: '0.18em' }}>
+        BETA / LAB
+      </Typography>
+      <Grid container spacing={3} sx={{ mt: 1.6 }}>
+        <Grid size={{ xs: 12, lg: 7.2 }}>
+          <Box
             sx={{
-              minHeight: { xs: 380, md: 460 },
-              borderRadius: { xs: 5, md: 7 },
-              overflow: 'hidden',
-              position: 'relative',
-              background: `
-                linear-gradient(160deg, ${alpha('#071314', 0.84)} 0%, ${alpha(
-                  '#038387',
-                  0.22,
-                )} 100%)
-              `,
+              minHeight: 430,
+              p: { xs: 2.8, md: 3.6 },
+              background: `linear-gradient(155deg, ${alpha('#152425', 0.98)} 0%, ${alpha(
+                '#0f6f73',
+                0.28,
+              )} 100%)`,
+              border: `1px solid ${alpha('#ffffff', 0.04)}`,
+              borderRadius: 1,
+              boxShadow: md2RaisedShadow,
             }}
           >
-            <CardContent sx={{ p: { xs: 3, md: 4 }, height: '100%' }}>
-              <Stack spacing={3.5} sx={{ height: '100%', justifyContent: 'space-between' }}>
-                <Box>
-                  <Stack direction="row" spacing={1.2} alignItems="center">
-                    <RocketLaunchRoundedIcon color="primary" />
-                    <Typography variant="overline" sx={{ color: 'primary.light' }}>
-                      Flutter Beta
-                    </Typography>
-                  </Stack>
-                  <Typography
-                    variant="h3"
+            <Typography
+              sx={{
+                maxWidth: 720,
+                fontSize: { xs: '2rem', md: '2.8rem' },
+                lineHeight: 1.08,
+                color: '#f5f7f7',
+              }}
+            >
+              这里留给 Flutter Beta、实验功能和未来路线图，不跟首页抢同一个视觉中心。
+            </Typography>
+            <Grid container spacing={2} sx={{ mt: 3.4 }}>
+              {labItems.map((item) => (
+                <Grid key={item} size={{ xs: 12, md: 4 }}>
+                  <Box
                     sx={{
-                      mt: 2,
-                      maxWidth: 680,
-                      fontSize: { xs: '1.9rem', md: '2.8rem' },
-                      lineHeight: 1.04,
+                      height: '100%',
+                      p: 2.2,
+                      backgroundColor: alpha('#0a1415', 0.54),
+                      border: `1px solid ${alpha('#ffffff', 0.06)}`,
+                      borderRadius: 1,
                     }}
                   >
-                    保持品牌一致，但允许 Beta 页面更强调状态、实验与功能探索。
-                  </Typography>
-                </Box>
-                <Grid container spacing={2}>
-                  {betaNotes.map((item) => (
-                    <Grid key={item} size={{ xs: 12, md: 4 }}>
-                      <Card
-                        sx={{
-                          height: '100%',
-                          borderRadius: 4,
-                          backgroundColor: alpha('#091617', 0.72),
-                        }}
-                      >
-                        <CardContent sx={{ p: 2.5 }}>
-                          <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.8 }}>
-                            {item}
-                          </Typography>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  ))}
+                    <Typography sx={{ color: alpha('#ffffff', 0.72), lineHeight: 1.8 }}>{item}</Typography>
+                  </Box>
                 </Grid>
-              </Stack>
-            </CardContent>
-          </Card>
+              ))}
+            </Grid>
+          </Box>
         </Grid>
-        <Grid size={{ xs: 12, lg: 5 }}>
-          <Card sx={{ borderRadius: { xs: 5, md: 7 }, height: '100%' }}>
-            <CardContent sx={{ p: { xs: 3, md: 4 }, height: '100%' }}>
-              <Stack spacing={3.2} sx={{ height: '100%' }}>
-                <Typography variant="h5">下一步可继续接入</Typography>
-                <Stack spacing={2.2} divider={<Divider flexItem />}>
-                  <Box>
-                    <Typography variant="subtitle1">真实下载链接</Typography>
-                    <Typography variant="body2" sx={{ mt: 0.8, color: 'text.secondary' }}>
-                      用正式 URL 替换常量后，按钮即可变成可发布入口。
-                    </Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="subtitle1">更多素材位</Typography>
-                    <Typography variant="body2" sx={{ mt: 0.8, color: 'text.secondary' }}>
-                      现在只使用了主视觉 PNG 和两个 Logo，新增立绘或二维码后可以继续往这套布局里扩。
-                    </Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="subtitle1">Hash 导航</Typography>
-                    <Typography variant="body2" sx={{ mt: 0.8, color: 'text.secondary' }}>
-                      当前 tab 会同步到 URL hash，静态站部署后也能直接分享具体页面视图。
-                    </Typography>
-                  </Box>
-                </Stack>
+        <Grid size={{ xs: 12, lg: 4.8 }}>
+          <Stack spacing={2.2}>
+            <BetaBubble onSelect={() => {}} compact />
+            <Box
+              sx={{
+                p: { xs: 2.8, md: 3.2 },
+                ...md2Surface,
+              }}
+            >
+              <Stack spacing={2}>
+                <Typography sx={{ fontSize: '1.4rem', color: '#f5f7f7' }}>可继续接入</Typography>
+                <Divider sx={{ borderColor: alpha('#ffffff', 0.08) }} />
+                <Typography sx={{ color: alpha('#ffffff', 0.72), lineHeight: 1.8 }}>
+                  后续把 Beta 的真实入口、更新日志和测试说明接进来就可以，不需要再改整套布局。
+                </Typography>
+                <Button
+                  startIcon={<SymbolIcon name="deployed_code" size={22} />}
+                  sx={{
+                    alignSelf: 'flex-start',
+                    px: 3.4,
+                    ...md2Button,
+                    minHeight: 44,
+                    justifyContent: 'center',
+                  }}
+                >
+                  保留实验入口
+                </Button>
               </Stack>
-            </CardContent>
-          </Card>
+            </Box>
+          </Stack>
         </Grid>
       </Grid>
-    </SectionFrame>
+    </Box>
   );
 }

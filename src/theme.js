@@ -51,7 +51,7 @@ export const theme = createTheme({
     },
   },
   shape: {
-    borderRadius: 8,
+    borderRadius: 4,
   },
   components: {
     MuiAppBar: {
@@ -71,16 +71,16 @@ export const theme = createTheme({
       },
       styleOverrides: {
         root: {
-          borderRadius: 22,
+          borderRadius: 4,
           paddingInline: 24,
-          minHeight: 52,
+          minHeight: 44,
         },
         contained: {
-          background: 'linear-gradient(135deg, #038387 0%, #0aa3a8 100%)',
-          boxShadow: `0 18px 36px ${alpha('#038387', 0.24)}`,
+          backgroundColor: '#038387',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.28), 0 3px 10px rgba(0,0,0,0.2)',
           '&:hover': {
-            background: 'linear-gradient(135deg, #059297 0%, #0bb9bf 100%)',
-            boxShadow: `0 22px 44px ${alpha('#038387', 0.3)}`,
+            backgroundColor: '#04959a',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.28), 0 6px 14px rgba(0,0,0,0.24)',
           },
         },
         outlined: {
@@ -99,7 +99,8 @@ export const theme = createTheme({
           backgroundColor: alpha('#111b1d', 0.82),
           backdropFilter: 'blur(20px)',
           border: `1px solid ${alpha('#f5fbfb', 0.08)}`,
-          boxShadow: `0 32px 80px ${alpha('#000000', 0.32)}`,
+          boxShadow: '0 2px 4px rgba(0,0,0,0.28), 0 8px 16px rgba(0,0,0,0.18)',
+          borderRadius: 4,
         },
       },
     },

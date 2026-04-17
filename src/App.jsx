@@ -1,4 +1,3 @@
-import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import {
   AppBar,
   Box,
@@ -25,6 +24,7 @@ import {
   HomeSection,
   LabSection,
   navItems,
+  SymbolIcon,
 } from './components/sections';
 
 const pageReveal = keyframes`
@@ -65,21 +65,12 @@ function SideRail({ activeId, onSelect }) {
   return (
     <Box
       sx={{
-        position: 'sticky',
-        top: 18,
-        alignSelf: 'flex-start',
         width: 108,
         minWidth: 108,
-        height: 'calc(100svh - 36px)',
-        ml: 2.2,
-        my: 2.2,
-        px: 1.3,
+        px: 0,
         py: 2.2,
-        borderRadius: 5,
-        backgroundColor: alpha('#0a1618', 0.76),
-        backdropFilter: 'blur(18px)',
-        border: `1px solid ${alpha('#f5fbfb', 0.08)}`,
-        boxShadow: `0 22px 48px ${alpha('#000000', 0.28)}`,
+        backgroundColor: '#2f3132',
+        borderRight: `1px solid ${alpha('#f5fbfb', 0.08)}`,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -94,7 +85,6 @@ function SideRail({ activeId, onSelect }) {
       <Stack spacing={1.4} sx={{ width: '100%' }}>
         {navItems.map((item) => {
           const selected = item.id === activeId;
-          const Icon = item.icon;
 
           return (
             <Button
@@ -105,14 +95,13 @@ function SideRail({ activeId, onSelect }) {
                 position: 'relative',
                 minWidth: 0,
                 minHeight: 68,
-                borderRadius: 3.4,
+                borderRadius: 0,
                 color: selected ? '#f5fbfb' : alpha('#f5fbfb', 0.6),
-                backgroundColor: selected ? alpha('#ffffff', 0.05) : 'transparent',
                 '&::before': selected
                   ? {
                       content: '""',
                       position: 'absolute',
-                      left: -10,
+                      right: 0,
                       top: 12,
                       bottom: 12,
                       width: 4,
@@ -122,11 +111,11 @@ function SideRail({ activeId, onSelect }) {
                     }
                   : {},
                 '&:hover': {
-                  backgroundColor: alpha('#ffffff', 0.06),
+                  backgroundColor: alpha('#ffffff', 0.03),
                 },
               }}
             >
-              <Icon sx={{ fontSize: 29 }} />
+              <SymbolIcon name={item.icon} size={28} />
             </Button>
           );
         })}
@@ -134,10 +123,10 @@ function SideRail({ activeId, onSelect }) {
       <Box sx={{ flex: 1 }} />
       <Box
         sx={{
-          width: 182,
+          width: 192,
           transform: 'rotate(-90deg)',
           transformOrigin: 'center',
-          mb: 10,
+          mb: 9.5,
           opacity: 0.88,
         }}
       >
@@ -165,7 +154,7 @@ function MobileNavigation({ activeId, onSelect }) {
             </Typography>
           </Box>
           <IconButton color="inherit" onClick={() => setDrawerOpen(true)} aria-label="打开菜单">
-            <MenuRoundedIcon />
+            <SymbolIcon name="menu" size={24} />
           </IconButton>
         </Toolbar>
       </AppBar>
@@ -184,7 +173,6 @@ function MobileNavigation({ activeId, onSelect }) {
         <List sx={{ px: 1.2, py: 2 }}>
           {navItems.map((item) => {
             const selected = item.id === activeId;
-            const Icon = item.icon;
 
             return (
               <ListItemButton
@@ -195,7 +183,7 @@ function MobileNavigation({ activeId, onSelect }) {
                   setDrawerOpen(false);
                 }}
                 sx={{
-                  borderRadius: 3,
+                  borderRadius: 1.2,
                   mb: 0.8,
                   '&.Mui-selected': {
                     backgroundColor: alpha('#038387', 0.16),
@@ -206,7 +194,7 @@ function MobileNavigation({ activeId, onSelect }) {
                 }}
               >
                 <ListItemIcon sx={{ minWidth: 42, color: selected ? 'primary.light' : 'inherit' }}>
-                  <Icon />
+                  <SymbolIcon name={item.icon} size={24} />
                 </ListItemIcon>
                 <ListItemText
                   primary={item.label}
@@ -257,9 +245,11 @@ export default function App() {
       <Box
         sx={{
           display: 'flex',
-          alignItems: 'flex-start',
-          gap: { lg: 2.4 },
-          pb: { xs: 5, md: 6 },
+          alignItems: 'stretch',
+          gap: 0,
+          minHeight: '100svh',
+          overflow: 'clip',
+          backgroundColor: { lg: alpha('#0a1415', 0.26) },
         }}
       >
         {!compactNavigation ? <SideRail activeId={activeId} onSelect={handleSelect} /> : null}
@@ -269,26 +259,38 @@ export default function App() {
             flex: 1,
             minWidth: 0,
             px: { xs: 2, sm: 3, md: 4, lg: 0 },
-            pt: { xs: 2.2, md: compactNavigation ? 3 : 2.2 },
-            pr: { lg: 2.4 },
+            pt: { xs: 2.2, md: compactNavigation ? 3 : 0 },
+            pb: { xs: 5, md: 6, lg: 0 },
           }}
         >
           <Box
             sx={{
-              minHeight: compactNavigation ? 'auto' : 'calc(100svh - 36px)',
-              borderRadius: { xs: 5, md: 7 },
-              border: `1px solid ${alpha('#f5fbfb', 0.08)}`,
-              backgroundColor: alpha(theme.palette.background.paper, 0.42),
+              minHeight: compactNavigation ? 'auto' : '100svh',
+              borderRadius: 0,
+              border: compactNavigation ? `1px solid ${alpha('#f5fbfb', 0.08)}` : 'none',
+              backgroundColor: compactNavigation
+                ? alpha(theme.palette.background.paper, 0.42)
+                : 'transparent',
               backdropFilter: 'blur(12px)',
-              boxShadow: `0 28px 72px ${alpha('#000000', 0.24)}`,
-              p: { xs: 2.4, sm: 3.2, md: 4.2, xl: 5 },
-              overflow: 'hidden',
+              boxShadow: compactNavigation ? `0 28px 72px ${alpha('#000000', 0.24)}` : 'none',
+              overflowY: compactNavigation ? 'visible' : 'auto',
+              overflowX: 'hidden',
+              scrollSnapType: activeId === 'home' ? 'y mandatory' : 'y proximity',
+              scrollbarWidth: 'thin',
+              '&::-webkit-scrollbar': {
+                width: 8,
+              },
+              '&::-webkit-scrollbar-thumb': {
+                backgroundColor: alpha('#77d7d9', 0.26),
+                borderRadius: 999,
+              },
             }}
           >
             <Box
               key={activeId}
               sx={{
                 animation: `${pageReveal} 520ms cubic-bezier(0.2, 0.8, 0.2, 1)`,
+                minHeight: '100%',
               }}
             >
               <SectionContent activeId={activeId} onSelect={handleSelect} />

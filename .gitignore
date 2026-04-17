@@ -4,3 +4,5 @@ dist/
 Thumbs.db
 npm-debug.log*
 debug.log
+.playwright-cli/
+output/playwright/
