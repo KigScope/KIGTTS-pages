@@ -316,21 +316,18 @@ function HomeRightBlock({ onSelect }) {
   return (
     <Box
       sx={{
-        position: { xs: 'relative', lg: 'absolute' },
-        right: { lg: 58, xl: 74 },
-        top: { lg: '50%' },
-        transform: { lg: 'translateY(-8%)' },
-        width: { xs: '100%', lg: 502, xl: 536 },
+        position: 'relative',
+        width: '100%',
+        maxWidth: { lg: 502, xl: 536 },
         mt: { xs: 2, lg: 0 },
+        ml: { lg: 'auto' },
       }}
     >
-      <Box component="img" src={lhtstudioLogo} alt="LHT Studio" sx={{ width: { xs: 174, md: 188 } }} />
       <Box
         component="img"
         src={logoWhite}
         alt="KIGTTS"
         sx={{
-          mt: 1.5,
           width: '100%',
           maxWidth: 474,
         }}
@@ -370,7 +367,8 @@ export function HomeSection({ onSelect }) {
           position: 'relative',
           minHeight: { xs: 'auto', lg: '100svh' },
           px: { xs: 2.5, sm: 3.4, lg: 5.4, xl: 6.4 },
-          py: { xs: 3, lg: 3.8 },
+          pt: { xs: 3, lg: 3.8 },
+          pb: { xs: 4.2, lg: 5.2 },
           scrollSnapAlign: 'start',
         }}
       >
@@ -383,56 +381,52 @@ export function HomeSection({ onSelect }) {
             mb: { xs: 2.8, lg: 0 },
           }}
         />
-        <Box
-          sx={{
-            display: { xs: 'block', lg: 'none' },
-          }}
-        >
-          <BetaBubble onSelect={onSelect} compact />
-        </Box>
-        <Box
-          sx={{
-            display: { xs: 'block', lg: 'none' },
-            mt: 3.2,
-          }}
-        >
-          <Box
-            component="img"
-            src={heroShot}
-            alt="KIGTTS 视觉主体"
-            sx={{
-              width: '100%',
-              display: 'block',
-              filter: 'drop-shadow(0 18px 34px rgba(0,0,0,0.24))',
-            }}
-          />
-        </Box>
-        <Box
-          sx={{
-            display: { xs: 'none', lg: 'block' },
-            position: 'absolute',
-            left: { lg: 34, xl: 56 },
-            top: { lg: 72, xl: 84 },
-            width: { lg: 820, xl: 910 },
-            pointerEvents: 'none',
-            zIndex: 0,
-          }}
-        >
-          <Box
-            component="img"
-            src={heroShot}
-            alt="KIGTTS 视觉主体"
-            sx={{
-              width: '100%',
-              display: 'block',
-              filter: 'drop-shadow(0 18px 34px rgba(0,0,0,0.26))',
-            }}
-          />
-        </Box>
         <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
           <BetaBubble onSelect={onSelect} />
         </Box>
-        <HomeRightBlock onSelect={onSelect} />
+        <Box
+          sx={{
+            mt: { xs: 0, lg: 3.2 },
+            display: { xs: 'block', lg: 'grid' },
+            gridTemplateColumns: {
+              lg: 'minmax(0, 1.1fr) minmax(380px, 0.82fr)',
+              xl: 'minmax(0, 1.14fr) minmax(420px, 0.86fr)',
+            },
+            alignItems: 'center',
+            gap: { lg: 4.5, xl: 6.2 },
+            minHeight: { lg: 'calc(100svh - 158px)' },
+          }}
+        >
+          <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
+            <BetaBubble onSelect={onSelect} compact />
+          </Box>
+          <Box
+            sx={{
+              minWidth: 0,
+              width: '100%',
+              mt: { xs: 3.2, lg: 0 },
+              pointerEvents: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: { lg: 'flex-start' },
+            }}
+          >
+            <Box
+              component="img"
+              src={heroShot}
+              alt="KIGTTS 视觉主体"
+              sx={{
+                width: '100%',
+                maxWidth: { lg: 'min(58vw, 980px)', xl: 'min(56vw, 1080px)' },
+                display: 'block',
+                filter: 'drop-shadow(0 18px 34px rgba(0,0,0,0.26))',
+              }}
+            />
+          </Box>
+          <Box sx={{ minWidth: 0, display: 'flex', justifyContent: { lg: 'flex-end' } }}>
+            <HomeRightBlock onSelect={onSelect} />
+          </Box>
+        </Box>
       </Box>
       <Box
         sx={{
@@ -490,6 +484,17 @@ export function AboutSection() {
       >
         <Typography
           sx={{
+            color: alpha('#ffffff', 0.82),
+            fontSize: '0.9rem',
+            letterSpacing: '0.18em',
+            textAlign: 'center',
+          }}
+        >
+          ABOUT
+        </Typography>
+        <Typography
+          sx={{
+            mt: { xs: 3.6, md: 5.8 },
             textAlign: 'center',
             color: '#f5f7f7',
             fontSize: { xs: '1.55rem', md: '2.05rem' },
@@ -559,7 +564,7 @@ export function DownloadSection() {
   );
 }
 
-export function LabSection() {
+export function LabSection({ onSelect }) {
   return (
     <Box
       sx={{
@@ -617,7 +622,7 @@ export function LabSection() {
         </Grid>
         <Grid size={{ xs: 12, lg: 4.8 }}>
           <Stack spacing={2.2}>
-            <BetaBubble onSelect={() => {}} compact />
+            <BetaBubble onSelect={() => onSelect?.('home')} compact />
             <Box
               sx={{
                 p: { xs: 2.8, md: 3.2 },

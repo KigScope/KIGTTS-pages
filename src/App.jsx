@@ -14,7 +14,7 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { alpha, keyframes, useTheme } from '@mui/material/styles';
-import { startTransition, useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import logoWhite from '../ART/LOGOWhite.svg';
 import lhtstudioLogo from '../ART/lhtstudio.svg';
 import { BackgroundEffects } from './components/BackgroundEffects';
@@ -45,20 +45,6 @@ function getInitialSection() {
 
   const hash = window.location.hash.replace('#', '');
   return navItems.some((item) => item.id === hash) ? hash : 'home';
-}
-
-function SectionContent({ activeId, onSelect }) {
-  switch (activeId) {
-    case 'about':
-      return <AboutSection />;
-    case 'download':
-      return <DownloadSection onSelect={onSelect} />;
-    case 'lab':
-      return <LabSection />;
-    case 'home':
-    default:
-      return <HomeSection onSelect={onSelect} />;
-  }
 }
 
 function SideRail({ activeId, onSelect }) {
@@ -215,27 +201,100 @@ export default function App() {
   const narrowViewport = useMediaQuery(theme.breakpoints.down('lg'));
   const touchNavigation = useMediaQuery('(hover: none) and (pointer: coarse)');
   const compactNavigation = narrowViewport || touchNavigation;
+  const scrollContainerRef = useRef(null);
+  const sectionRefs = useRef({});
   const [activeId, setActiveId] = useState(getInitialSection);
+
+  const setSectionRef = (sectionId) => (node) => {
+    if (node) {
+      sectionRefs.current[sectionId] = node;
+      return;
+    }
+
+    delete sectionRefs.current[sectionId];
+  };
+
+  const scrollToSection = (sectionId, behavior = 'smooth') => {
+    const target = sectionRefs.current[sectionId];
+    if (!target) {
+      return;
+    }
+
+    target.scrollIntoView({ behavior, block: 'start' });
+
+    if (window.location.hash !== `#${sectionId}`) {
+      window.history.replaceState(null, '', `#${sectionId}`);
+    }
+  };
+
+  useEffect(() => {
+    const scrollRoot = scrollContainerRef.current;
+    if (!scrollRoot) {
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntries = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((left, right) => right.intersectionRatio - left.intersectionRatio);
+
+        const nextId = visibleEntries[0]?.target.getAttribute('data-section-id');
+        if (!nextId) {
+          return;
+        }
+
+        setActiveId((previousId) => {
+          if (previousId === nextId) {
+            return previousId;
+          }
+
+          if (window.location.hash !== `#${nextId}`) {
+            window.history.replaceState(null, '', `#${nextId}`);
+          }
+
+          return nextId;
+        });
+      },
+      {
+        root: scrollRoot,
+        threshold: [0.2, 0.35, 0.5, 0.65, 0.8],
+        rootMargin: compactNavigation ? '-6% 0px -42% 0px' : '-8% 0px -38% 0px',
+      },
+    );
+
+    navItems.forEach((item) => {
+      const sectionNode = sectionRefs.current[item.id];
+      if (sectionNode) {
+        observer.observe(sectionNode);
+      }
+    });
+
+    return () => observer.disconnect();
+  }, [compactNavigation]);
 
   useEffect(() => {
     const handleHashChange = () => {
-      const next = getInitialSection();
-      setActiveId((prev) => (prev === next ? prev : next));
+      const nextId = getInitialSection();
+      scrollToSection(nextId);
     };
 
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  const handleSelect = (nextId) => {
-    if (nextId === activeId) {
-      return;
-    }
+  useEffect(() => {
+    const initialId = getInitialSection();
+    const timerId = window.setTimeout(() => {
+      scrollToSection(initialId, 'auto');
+    }, 30);
 
-    window.history.replaceState(null, '', `#${nextId}`);
-    startTransition(() => {
-      setActiveId(nextId);
-    });
+    return () => window.clearTimeout(timerId);
+  }, []);
+
+  const handleSelect = (nextId) => {
+    setActiveId(nextId);
+    scrollToSection(nextId);
   };
 
   return (
@@ -247,7 +306,7 @@ export default function App() {
           display: 'flex',
           alignItems: 'stretch',
           gap: 0,
-          minHeight: '100svh',
+          height: compactNavigation ? 'calc(100svh - 74px)' : '100svh',
           overflow: 'clip',
           backgroundColor: { lg: alpha('#0a1415', 0.26) },
         }}
@@ -258,6 +317,8 @@ export default function App() {
           sx={{
             flex: 1,
             minWidth: 0,
+            height: '100%',
+            boxSizing: 'border-box',
             px: { xs: 2, sm: 3, md: 4, lg: 0 },
             pt: { xs: 2.2, md: compactNavigation ? 3 : 0 },
             pb: { xs: 5, md: 6, lg: 0 },
@@ -265,7 +326,7 @@ export default function App() {
         >
           <Box
             sx={{
-              minHeight: compactNavigation ? 'auto' : '100svh',
+              height: '100%',
               borderRadius: 0,
               border: compactNavigation ? `1px solid ${alpha('#f5fbfb', 0.08)}` : 'none',
               backgroundColor: compactNavigation
@@ -273,9 +334,10 @@ export default function App() {
                 : 'transparent',
               backdropFilter: 'blur(12px)',
               boxShadow: compactNavigation ? `0 28px 72px ${alpha('#000000', 0.24)}` : 'none',
-              overflowY: compactNavigation ? 'visible' : 'auto',
+              overflowY: 'auto',
               overflowX: 'hidden',
-              scrollSnapType: activeId === 'home' ? 'y mandatory' : 'y proximity',
+              scrollSnapType: 'y proximity',
+              scrollBehavior: 'smooth',
               scrollbarWidth: 'thin',
               '&::-webkit-scrollbar': {
                 width: 8,
@@ -285,15 +347,50 @@ export default function App() {
                 borderRadius: 999,
               },
             }}
+            ref={scrollContainerRef}
           >
             <Box
-              key={activeId}
               sx={{
                 animation: `${pageReveal} 520ms cubic-bezier(0.2, 0.8, 0.2, 1)`,
                 minHeight: '100%',
               }}
             >
-              <SectionContent activeId={activeId} onSelect={handleSelect} />
+              <Box
+                component="section"
+                id="home"
+                data-section-id="home"
+                ref={setSectionRef('home')}
+                sx={{ scrollSnapAlign: 'start', scrollMarginTop: 24 }}
+              >
+                <HomeSection onSelect={handleSelect} />
+              </Box>
+              <Box
+                component="section"
+                id="about"
+                data-section-id="about"
+                ref={setSectionRef('about')}
+                sx={{ scrollSnapAlign: 'start', scrollMarginTop: 24 }}
+              >
+                <AboutSection />
+              </Box>
+              <Box
+                component="section"
+                id="download"
+                data-section-id="download"
+                ref={setSectionRef('download')}
+                sx={{ scrollSnapAlign: 'start', scrollMarginTop: 24 }}
+              >
+                <DownloadSection />
+              </Box>
+              <Box
+                component="section"
+                id="lab"
+                data-section-id="lab"
+                ref={setSectionRef('lab')}
+                sx={{ scrollSnapAlign: 'start', scrollMarginTop: 24 }}
+              >
+                <LabSection onSelect={handleSelect} />
+              </Box>
             </Box>
           </Box>
         </Box>
