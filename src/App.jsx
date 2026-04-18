@@ -16,7 +16,6 @@ import {
 import { alpha, keyframes, useTheme } from '@mui/material/styles';
 import { useEffect, useRef, useState } from 'react';
 import logoWhite from '../ART/LOGOWhite.svg';
-import lhtstudioLogo from '../ART/lhtstudio.svg';
 import { BackgroundEffects } from './components/BackgroundEffects';
 import {
   AboutSection,
@@ -38,6 +37,15 @@ const pageReveal = keyframes`
   }
 `;
 
+const SCROLL_EPSILON = 2;
+const WHEEL_TRIGGER_DELTA = 24;
+const SWIPE_DISTANCE_RATIO = 0.11;
+const SWIPE_VELOCITY_THRESHOLD = 0.42;
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
 function getInitialSection() {
   if (typeof window === 'undefined') {
     return 'home';
@@ -54,7 +62,7 @@ function SideRail({ activeId, onSelect }) {
         width: 108,
         minWidth: 108,
         px: 0,
-        py: 2.2,
+        py: 3,
         backgroundColor: '#2f3132',
         borderRight: `1px solid ${alpha('#f5fbfb', 0.08)}`,
         display: 'flex',
@@ -62,13 +70,7 @@ function SideRail({ activeId, onSelect }) {
         alignItems: 'center',
       }}
     >
-      <Box
-        component="img"
-        src={lhtstudioLogo}
-        alt="LHT Studio"
-        sx={{ width: 52, opacity: 0.9, mt: 1.5, mb: 4 }}
-      />
-      <Stack spacing={1.4} sx={{ width: '100%' }}>
+      <Stack spacing={1.4} sx={{ width: '100%', mt: 2 }}>
         {navItems.map((item) => {
           const selected = item.id === activeId;
 
@@ -83,6 +85,7 @@ function SideRail({ activeId, onSelect }) {
                 minHeight: 68,
                 borderRadius: 0,
                 color: selected ? '#f5fbfb' : alpha('#f5fbfb', 0.6),
+                transition: 'color 180ms ease, background-color 180ms ease',
                 '&::before': selected
                   ? {
                       content: '""',
@@ -130,13 +133,13 @@ function MobileNavigation({ activeId, onSelect }) {
     <>
       <AppBar position="sticky">
         <Toolbar sx={{ minHeight: 74, gap: 1.5 }}>
-          <Box component="img" src={lhtstudioLogo} alt="LHT Studio" sx={{ width: 38 }} />
+          <Box component="img" src={logoWhite} alt="KIGTTS" sx={{ width: 118, flexShrink: 0 }} />
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-              KIGTTS Studio
+              {currentItem.label}
             </Typography>
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              {currentItem.label} / {currentItem.caption}
+              {currentItem.caption}
             </Typography>
           </Box>
           <IconButton color="inherit" onClick={() => setDrawerOpen(true)} aria-label="打开菜单">
@@ -203,7 +206,125 @@ export default function App() {
   const compactNavigation = narrowViewport || touchNavigation;
   const scrollContainerRef = useRef(null);
   const sectionRefs = useRef({});
+  const activeIdRef = useRef(getInitialSection());
+  const targetIdRef = useRef(null);
+  const animationFrameRef = useRef(0);
+  const animationLockRef = useRef(false);
+  const touchStateRef = useRef({
+    startY: 0,
+    lastY: 0,
+    startTime: 0,
+    tracking: false,
+  });
   const [activeId, setActiveId] = useState(getInitialSection);
+
+  const setCurrentSection = (nextId) => {
+    activeIdRef.current = nextId;
+    setActiveId((previousId) => (previousId === nextId ? previousId : nextId));
+  };
+
+  const updateHash = (sectionId) => {
+    if (window.location.hash !== `#${sectionId}`) {
+      window.history.replaceState(null, '', `#${sectionId}`);
+    }
+  };
+
+  const getSectionIndex = (sectionId) => navItems.findIndex((item) => item.id === sectionId);
+
+  const getNearestSectionId = () => {
+    const scrollRoot = scrollContainerRef.current;
+    if (!scrollRoot) {
+      return activeIdRef.current;
+    }
+
+    const probeOffset = scrollRoot.clientHeight * (compactNavigation ? 0.2 : 0.18);
+    return navItems.reduce(
+      (closest, item) => {
+        const sectionNode = sectionRefs.current[item.id];
+        if (!sectionNode) {
+          return closest;
+        }
+
+        const distance = Math.abs(sectionNode.offsetTop - scrollRoot.scrollTop - probeOffset);
+        if (distance < closest.distance) {
+          return { id: item.id, distance };
+        }
+
+        return closest;
+      },
+      { id: activeIdRef.current, distance: Number.POSITIVE_INFINITY },
+    ).id;
+  };
+
+  const finishAnimation = () => {
+    if (animationFrameRef.current) {
+      window.cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = 0;
+    }
+
+    animationLockRef.current = false;
+    targetIdRef.current = null;
+  };
+
+  const animateToSection = (sectionId, duration = compactNavigation ? 460 : 540) => {
+    const scrollRoot = scrollContainerRef.current;
+    const targetNode = sectionRefs.current[sectionId];
+    if (!scrollRoot || !targetNode) {
+      return;
+    }
+
+    const targetTop = targetNode.offsetTop;
+    const startTop = scrollRoot.scrollTop;
+    const travel = targetTop - startTop;
+
+    finishAnimation();
+
+    if (Math.abs(travel) <= SCROLL_EPSILON) {
+      scrollRoot.scrollTop = targetTop;
+      setCurrentSection(sectionId);
+      updateHash(sectionId);
+      return;
+    }
+
+    targetIdRef.current = sectionId;
+    animationLockRef.current = true;
+    setCurrentSection(sectionId);
+    updateHash(sectionId);
+
+    const startTime = performance.now();
+    const easing = (progress) => 1 - Math.pow(1 - progress, 4);
+
+    const step = (now) => {
+      const progress = clamp((now - startTime) / duration, 0, 1);
+      scrollRoot.scrollTop = startTop + travel * easing(progress);
+
+      if (progress < 1) {
+        animationFrameRef.current = window.requestAnimationFrame(step);
+        return;
+      }
+
+      scrollRoot.scrollTop = targetTop;
+      finishAnimation();
+      const settledId = getNearestSectionId();
+      setCurrentSection(settledId);
+      updateHash(settledId);
+    };
+
+    animationFrameRef.current = window.requestAnimationFrame(step);
+  };
+
+  const snapByDirection = (direction) => {
+    const currentId = targetIdRef.current ?? getNearestSectionId();
+    const currentIndex = getSectionIndex(currentId);
+    const nextIndex = clamp(currentIndex + direction, 0, navItems.length - 1);
+
+    if (nextIndex === currentIndex) {
+      animateToSection(currentId, compactNavigation ? 360 : 420);
+      return;
+    }
+
+    animateToSection(navItems[nextIndex].id);
+  };
 
   const setSectionRef = (sectionId) => (node) => {
     if (node) {
@@ -214,66 +335,28 @@ export default function App() {
     delete sectionRefs.current[sectionId];
   };
 
-  const scrollToSection = (sectionId, behavior = 'smooth') => {
-    const scrollRoot = scrollContainerRef.current;
-    const target = sectionRefs.current[sectionId];
-    if (!target || !scrollRoot) {
-      return;
-    }
-
-    scrollRoot.scrollTo({
-      top: target.offsetTop,
-      behavior,
-    });
-
-    if (window.location.hash !== `#${sectionId}`) {
-      window.history.replaceState(null, '', `#${sectionId}`);
-    }
-  };
-
   useEffect(() => {
     const scrollRoot = scrollContainerRef.current;
     if (!scrollRoot) {
       return undefined;
     }
 
-    let rafId = 0;
-
     const updateActiveSection = () => {
-      const probeOffset = scrollRoot.clientHeight * (compactNavigation ? 0.24 : 0.2);
-      const nextId = navItems.reduce(
-        (closest, item) => {
-          const sectionNode = sectionRefs.current[item.id];
-          if (!sectionNode) {
-            return closest;
-          }
+      if (animationLockRef.current && targetIdRef.current) {
+        setCurrentSection(targetIdRef.current);
+        return;
+      }
 
-          const distance = Math.abs(sectionNode.offsetTop - scrollRoot.scrollTop - probeOffset);
-          if (distance < closest.distance) {
-            return { id: item.id, distance };
-          }
-
-          return closest;
-        },
-        { id: activeId, distance: Number.POSITIVE_INFINITY },
-      ).id;
-
-      setActiveId((previousId) => {
-        if (previousId === nextId) {
-          return previousId;
-        }
-
-        if (window.location.hash !== `#${nextId}`) {
-          window.history.replaceState(null, '', `#${nextId}`);
-        }
-
-        return nextId;
-      });
+      const nextId = getNearestSectionId();
+      setCurrentSection(nextId);
+      updateHash(nextId);
     };
 
+    let scrollRafId = 0;
+
     const handleScroll = () => {
-      window.cancelAnimationFrame(rafId);
-      rafId = window.requestAnimationFrame(updateActiveSection);
+      window.cancelAnimationFrame(scrollRafId);
+      scrollRafId = window.requestAnimationFrame(updateActiveSection);
     };
 
     updateActiveSection();
@@ -281,32 +364,121 @@ export default function App() {
 
     return () => {
       scrollRoot.removeEventListener('scroll', handleScroll);
-      window.cancelAnimationFrame(rafId);
+      window.cancelAnimationFrame(scrollRafId);
+    };
+  }, [compactNavigation]);
+
+  useEffect(() => {
+    activeIdRef.current = activeId;
+  }, [activeId]);
+
+  useEffect(() => {
+    const scrollRoot = scrollContainerRef.current;
+    if (!scrollRoot) {
+      return undefined;
+    }
+
+    const handleWheel = (event) => {
+      if (Math.abs(event.deltaY) < WHEEL_TRIGGER_DELTA || Math.abs(event.deltaY) < Math.abs(event.deltaX)) {
+        return;
+      }
+
+      event.preventDefault();
+
+      if (animationLockRef.current) {
+        return;
+      }
+
+      snapByDirection(event.deltaY > 0 ? 1 : -1);
+    };
+
+    const handleTouchStart = (event) => {
+      if (event.touches.length !== 1) {
+        touchStateRef.current.tracking = false;
+        return;
+      }
+
+      const touch = event.touches[0];
+      touchStateRef.current = {
+        startY: touch.clientY,
+        lastY: touch.clientY,
+        startTime: performance.now(),
+        tracking: true,
+      };
+    };
+
+    const handleTouchMove = (event) => {
+      if (!touchStateRef.current.tracking || event.touches.length !== 1) {
+        return;
+      }
+
+      touchStateRef.current.lastY = event.touches[0].clientY;
+    };
+
+    const handleTouchEnd = () => {
+      const touchState = touchStateRef.current;
+      if (!touchState.tracking || animationLockRef.current) {
+        touchStateRef.current.tracking = false;
+        return;
+      }
+
+      touchStateRef.current.tracking = false;
+
+      const travel = touchState.startY - touchState.lastY;
+      const elapsed = Math.max(performance.now() - touchState.startTime, 1);
+      const velocity = Math.abs(travel) / elapsed;
+      const travelThreshold = scrollRoot.clientHeight * SWIPE_DISTANCE_RATIO;
+
+      if (Math.abs(travel) >= travelThreshold || velocity >= SWIPE_VELOCITY_THRESHOLD) {
+        snapByDirection(travel > 0 ? 1 : -1);
+        return;
+      }
+
+      animateToSection(getNearestSectionId(), compactNavigation ? 320 : 360);
+    };
+
+    scrollRoot.addEventListener('wheel', handleWheel, { passive: false });
+    scrollRoot.addEventListener('touchstart', handleTouchStart, { passive: true });
+    scrollRoot.addEventListener('touchmove', handleTouchMove, { passive: true });
+    scrollRoot.addEventListener('touchend', handleTouchEnd, { passive: true });
+    scrollRoot.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+
+    return () => {
+      scrollRoot.removeEventListener('wheel', handleWheel);
+      scrollRoot.removeEventListener('touchstart', handleTouchStart);
+      scrollRoot.removeEventListener('touchmove', handleTouchMove);
+      scrollRoot.removeEventListener('touchend', handleTouchEnd);
+      scrollRoot.removeEventListener('touchcancel', handleTouchEnd);
     };
   }, [compactNavigation]);
 
   useEffect(() => {
     const handleHashChange = () => {
       const nextId = getInitialSection();
-      scrollToSection(nextId);
+      animateToSection(nextId, compactNavigation ? 360 : 420);
     };
 
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
+  }, [compactNavigation]);
 
   useEffect(() => {
     const initialId = getInitialSection();
     const timerId = window.setTimeout(() => {
-      scrollToSection(initialId, 'auto');
+      const scrollRoot = scrollContainerRef.current;
+      const targetNode = sectionRefs.current[initialId];
+      if (scrollRoot && targetNode) {
+        scrollRoot.scrollTop = targetNode.offsetTop;
+        setCurrentSection(initialId);
+        updateHash(initialId);
+      }
     }, 30);
 
     return () => window.clearTimeout(timerId);
   }, []);
 
   const handleSelect = (nextId) => {
-    setActiveId(nextId);
-    scrollToSection(nextId);
+    animateToSection(nextId, compactNavigation ? 420 : 520);
   };
 
   return (
@@ -348,9 +520,10 @@ export default function App() {
               boxShadow: compactNavigation ? `0 28px 72px ${alpha('#000000', 0.24)}` : 'none',
               overflowY: 'auto',
               overflowX: 'hidden',
-              scrollSnapType: 'y proximity',
-              scrollBehavior: 'smooth',
+              scrollSnapType: 'y mandatory',
               scrollbarWidth: 'thin',
+              overscrollBehaviorY: 'contain',
+              touchAction: 'pan-y',
               '&::-webkit-scrollbar': {
                 width: 8,
               },
@@ -375,7 +548,7 @@ export default function App() {
                 id="home"
                 data-section-id="home"
                 ref={setSectionRef('home')}
-                sx={{ scrollSnapAlign: 'start', scrollMarginTop: 24 }}
+                sx={{ scrollSnapAlign: 'start', scrollSnapStop: 'always', scrollMarginTop: 24 }}
               >
                 <HomeSection onSelect={handleSelect} />
               </Box>
@@ -384,7 +557,7 @@ export default function App() {
                 id="about"
                 data-section-id="about"
                 ref={setSectionRef('about')}
-                sx={{ scrollSnapAlign: 'start', scrollMarginTop: 24 }}
+                sx={{ scrollSnapAlign: 'start', scrollSnapStop: 'always', scrollMarginTop: 24 }}
               >
                 <AboutSection />
               </Box>
@@ -393,7 +566,7 @@ export default function App() {
                 id="download"
                 data-section-id="download"
                 ref={setSectionRef('download')}
-                sx={{ scrollSnapAlign: 'start', scrollMarginTop: 24 }}
+                sx={{ scrollSnapAlign: 'start', scrollSnapStop: 'always', scrollMarginTop: 24 }}
               >
                 <DownloadSection />
               </Box>
@@ -402,7 +575,7 @@ export default function App() {
                 id="lab"
                 data-section-id="lab"
                 ref={setSectionRef('lab')}
-                sx={{ scrollSnapAlign: 'start', scrollMarginTop: 24 }}
+                sx={{ scrollSnapAlign: 'start', scrollSnapStop: 'always', scrollMarginTop: 24 }}
               >
                 <LabSection onSelect={handleSelect} />
               </Box>
