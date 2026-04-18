@@ -215,12 +215,16 @@ export default function App() {
   };
 
   const scrollToSection = (sectionId, behavior = 'smooth') => {
+    const scrollRoot = scrollContainerRef.current;
     const target = sectionRefs.current[sectionId];
-    if (!target) {
+    if (!target || !scrollRoot) {
       return;
     }
 
-    target.scrollIntoView({ behavior, block: 'start' });
+    scrollRoot.scrollTo({
+      top: target.offsetTop,
+      behavior,
+    });
 
     if (window.location.hash !== `#${sectionId}`) {
       window.history.replaceState(null, '', `#${sectionId}`);
@@ -233,44 +237,52 @@ export default function App() {
       return undefined;
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visibleEntries = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((left, right) => right.intersectionRatio - left.intersectionRatio);
+    let rafId = 0;
 
-        const nextId = visibleEntries[0]?.target.getAttribute('data-section-id');
-        if (!nextId) {
-          return;
+    const updateActiveSection = () => {
+      const probeOffset = scrollRoot.clientHeight * (compactNavigation ? 0.24 : 0.2);
+      const nextId = navItems.reduce(
+        (closest, item) => {
+          const sectionNode = sectionRefs.current[item.id];
+          if (!sectionNode) {
+            return closest;
+          }
+
+          const distance = Math.abs(sectionNode.offsetTop - scrollRoot.scrollTop - probeOffset);
+          if (distance < closest.distance) {
+            return { id: item.id, distance };
+          }
+
+          return closest;
+        },
+        { id: activeId, distance: Number.POSITIVE_INFINITY },
+      ).id;
+
+      setActiveId((previousId) => {
+        if (previousId === nextId) {
+          return previousId;
         }
 
-        setActiveId((previousId) => {
-          if (previousId === nextId) {
-            return previousId;
-          }
+        if (window.location.hash !== `#${nextId}`) {
+          window.history.replaceState(null, '', `#${nextId}`);
+        }
 
-          if (window.location.hash !== `#${nextId}`) {
-            window.history.replaceState(null, '', `#${nextId}`);
-          }
+        return nextId;
+      });
+    };
 
-          return nextId;
-        });
-      },
-      {
-        root: scrollRoot,
-        threshold: [0.2, 0.35, 0.5, 0.65, 0.8],
-        rootMargin: compactNavigation ? '-6% 0px -42% 0px' : '-8% 0px -38% 0px',
-      },
-    );
+    const handleScroll = () => {
+      window.cancelAnimationFrame(rafId);
+      rafId = window.requestAnimationFrame(updateActiveSection);
+    };
 
-    navItems.forEach((item) => {
-      const sectionNode = sectionRefs.current[item.id];
-      if (sectionNode) {
-        observer.observe(sectionNode);
-      }
-    });
+    updateActiveSection();
+    scrollRoot.addEventListener('scroll', handleScroll, { passive: true });
 
-    return () => observer.disconnect();
+    return () => {
+      scrollRoot.removeEventListener('scroll', handleScroll);
+      window.cancelAnimationFrame(rafId);
+    };
   }, [compactNavigation]);
 
   useEffect(() => {
@@ -353,6 +365,9 @@ export default function App() {
               sx={{
                 animation: `${pageReveal} 520ms cubic-bezier(0.2, 0.8, 0.2, 1)`,
                 minHeight: '100%',
+                width: '100%',
+                maxWidth: { lg: '1720px', xl: '1840px' },
+                mx: 'auto',
               }}
             >
               <Box

@@ -361,100 +361,69 @@ function HomeRightBlock({ onSelect }) {
 
 export function HomeSection({ onSelect }) {
   return (
-    <Box>
+    <Box
+      sx={{
+        position: 'relative',
+        minHeight: { xs: 'auto', lg: '100svh' },
+        px: { xs: 2.5, sm: 3.4, lg: 5.4, xl: 6.4 },
+        pt: { xs: 3, lg: 3.8 },
+        pb: { xs: 4.2, lg: 5.2 },
+        scrollSnapAlign: 'start',
+      }}
+    >
       <Box
+        component="img"
+        src={lhtstudioLogo}
+        alt="LHT Studio"
         sx={{
-          position: 'relative',
-          minHeight: { xs: 'auto', lg: '100svh' },
-          px: { xs: 2.5, sm: 3.4, lg: 5.4, xl: 6.4 },
-          pt: { xs: 3, lg: 3.8 },
-          pb: { xs: 4.2, lg: 5.2 },
-          scrollSnapAlign: 'start',
+          width: { xs: 170, md: 200 },
+          mb: { xs: 2.8, lg: 0 },
         }}
-      >
-        <Box
-          component="img"
-          src={lhtstudioLogo}
-          alt="LHT Studio"
-          sx={{
-            width: { xs: 170, md: 200 },
-            mb: { xs: 2.8, lg: 0 },
-          }}
-        />
-        <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
-          <BetaBubble onSelect={onSelect} />
-        </Box>
-        <Box
-          sx={{
-            mt: { xs: 0, lg: 3.2 },
-            display: { xs: 'block', lg: 'grid' },
-            gridTemplateColumns: {
-              lg: 'minmax(0, 1.1fr) minmax(380px, 0.82fr)',
-              xl: 'minmax(0, 1.14fr) minmax(420px, 0.86fr)',
-            },
-            alignItems: 'center',
-            gap: { lg: 4.5, xl: 6.2 },
-            minHeight: { lg: 'calc(100svh - 158px)' },
-          }}
-        >
-          <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
-            <BetaBubble onSelect={onSelect} compact />
-          </Box>
-          <Box
-            sx={{
-              minWidth: 0,
-              width: '100%',
-              mt: { xs: 3.2, lg: 0 },
-              pointerEvents: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: { lg: 'flex-start' },
-            }}
-          >
-            <Box
-              component="img"
-              src={heroShot}
-              alt="KIGTTS 视觉主体"
-              sx={{
-                width: '100%',
-                maxWidth: { lg: 'min(58vw, 980px)', xl: 'min(56vw, 1080px)' },
-                display: 'block',
-                filter: 'drop-shadow(0 18px 34px rgba(0,0,0,0.26))',
-              }}
-            />
-          </Box>
-          <Box sx={{ minWidth: 0, display: 'flex', justifyContent: { lg: 'flex-end' } }}>
-            <HomeRightBlock onSelect={onSelect} />
-          </Box>
-        </Box>
+      />
+      <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
+        <BetaBubble onSelect={onSelect} />
       </Box>
       <Box
         sx={{
-          px: { xs: 2.5, sm: 3.4, lg: 5.4, xl: 6.4 },
-          pb: { xs: 3.2, lg: 5.4 },
-          scrollSnapAlign: 'start',
+          mt: { xs: 0, lg: 3.2 },
+          display: { xs: 'block', lg: 'grid' },
+          gridTemplateColumns: {
+            lg: 'minmax(0, 1.1fr) minmax(380px, 0.82fr)',
+            xl: 'minmax(0, 1.14fr) minmax(420px, 0.86fr)',
+          },
+          alignItems: 'center',
+          gap: { lg: 4.5, xl: 6.2 },
+          minHeight: { lg: 'calc(100svh - 158px)' },
         }}
       >
+        <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
+          <BetaBubble onSelect={onSelect} compact />
+        </Box>
         <Box
           sx={{
-            width: { xs: '100%', lg: '72%', xl: '68%' },
-            minHeight: { xs: 360, lg: 440 },
-            px: { xs: 3, md: 4.8 },
-            py: { xs: 4.2, md: 5.2 },
-            ...md2Surface,
-            boxShadow: md2RaisedShadow,
+            minWidth: 0,
+            width: '100%',
+            mt: { xs: 3.2, lg: 0 },
+            pointerEvents: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: { lg: 'flex-start' },
           }}
         >
-          <Typography
+          <Box
+            component="img"
+            src={heroShot}
+            alt="KIGTTS 视觉主体"
             sx={{
-              color: '#f5f7f7',
-              fontSize: { xs: '1.55rem', md: '2rem' },
-              lineHeight: 1.3,
-              fontWeight: 400,
+              width: '100%',
+              maxWidth: { lg: 'min(58vw, 980px)', xl: 'min(56vw, 1080px)' },
+              display: 'block',
+              filter: 'drop-shadow(0 18px 34px rgba(0,0,0,0.26))',
             }}
-          >
-            这是 MD2 风格的介绍页，后续可以接功能说明、更新日志和安装引导。
-          </Typography>
+          />
+        </Box>
+        <Box sx={{ minWidth: 0, display: 'flex', justifyContent: { lg: 'flex-end' } }}>
+          <HomeRightBlock onSelect={onSelect} />
         </Box>
       </Box>
     </Box>
