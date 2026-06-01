@@ -361,6 +361,31 @@ export function DownloadSection({ activeTabId: activeTabIdProp, onTabChange }) {
                       );
                     }
                     if (currentDownload.id === 'android' && idx === 1) return null;
+                    // Group Huawei + 应用宝 into one row for Android
+                    const isStorePair = currentDownload.id === 'android' && idx === 2;
+                    if (isStorePair) {
+                      const huawei = action;
+                      const yyb = currentDownload.actions[3];
+                      return (
+                        <Stack direction="row" spacing={1} key="store-row">
+                          <Button fullWidth component="a" href={huawei.href} target="_blank" rel="noopener noreferrer"
+                            startIcon={<SymbolIcon name={huawei.icon} size={20} />}
+                            onMouseEnter={() => (setHoveredAction(2), setQrAction(2))}
+                            onMouseLeave={() => setHoveredAction(-1)}
+                            sx={{ ...md2Button, flex: 1, minWidth: 0, minHeight: { xs: 46, sm: 54 }, justifyContent: 'center', borderRadius: 0.7, fontSize: { xs: '0.8rem', sm: '0.95rem' } }}>
+                            {huawei.label}
+                          </Button>
+                          <Button fullWidth component="a" href={yyb.href} target="_blank" rel="noopener noreferrer"
+                            startIcon={<SymbolIcon name={yyb.icon} size={20} />}
+                            onMouseEnter={() => (setHoveredAction(3), setQrAction(3))}
+                            onMouseLeave={() => setHoveredAction(-1)}
+                            sx={{ ...md2Button, flex: 1, minWidth: 0, minHeight: { xs: 46, sm: 54 }, justifyContent: 'center', borderRadius: 0.7, fontSize: { xs: '0.8rem', sm: '0.95rem' } }}>
+                            {yyb.label}
+                          </Button>
+                        </Stack>
+                      );
+                    }
+                    if (currentDownload.id === 'android' && idx === 3) return null;
                     return (
                     <Button
                       key={action.label}

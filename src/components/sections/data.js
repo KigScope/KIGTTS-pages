@@ -127,6 +127,7 @@ export const downloadTabs = [
       { label: '从Github下载', icon: 'download', href: androidApkUrl, primary: true },
       { label: '从Gitee下载', icon: 'cloud_download', href: 'https://gitee.com/LHTOFFICAL/KIGTTS/releases/download/APP0.1.1%E5%8F%91%E8%A1%8C%E7%89%88/app-release.apk' },
       { label: '从华为应用市场下载', icon: 'storefront', href: 'https://appgallery.huawei.com/app/C117576039?sharePrepath=ag&channelId=%E5%AE%98%E6%96%B9%E7%BD%91%E7%AB%99&id=fafcf6ee7f5f4097bdd660bc8be21563&s=08BD28653FBBD05CDB82E8345EE55350DFC37CD4FAFE57F7F1281EB7D890CA2E&detailType=0&v=&callType=AGDLINK&installType=0000&shareTo=qrcode', primary: true },
+      { label: '从应用宝下载', icon: 'shop', href: 'https://a.app.qq.com/o/simple.jsp?pkgname=com.lhtstudio.kigtts.app', primary: true },
       { label: '查看发行页', icon: 'open_in_new', href: androidReleaseUrl },
     ],
   },
