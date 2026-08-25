@@ -34,6 +34,7 @@ export const betaLines = ['Flutter 新版', '即将上线'];
 export const qrValue = 'www.kigtts.lhtstudio.com';
 export const androidReleaseUrl = 'https://github.com/LHT02/KIGTTS/releases/latest';
 export const androidApkUrl = 'https://github.com/LHT02/KIGTTS/releases/latest/download/app-release.apk';
+export const modelscopeApkUrl = 'https://modelscope.cn/models/LHTSTUDIO/KIGTTS_APP/resolve/master/app-release.apk';
 export const trainerModelScopeUrl = 'https://modelscope.cn/models/LHTSTUDIO/KIGTTS_TRAINER/files';
 export const trainerHuggingFaceUrl = 'https://huggingface.co/LHT02/kigtts-trainer/tree/main';
 export const projectUrl = 'https://github.com/LHT02/KIGTTS';
@@ -123,12 +124,12 @@ export const downloadTabs = [
       ['下载', 'GitHub Release'],
     ],
     bullets: ['在手机浏览器中下载 APK', '确保从官网或 GitHub 下载，避免第三方修改包', '安装后按需要开启麦克风、悬浮窗等权限'],
-    actions: [
-      { label: '从Github下载', icon: 'download', href: androidApkUrl, primary: true },
-      { label: '从Gitee下载', icon: 'cloud_download', href: 'https://gitee.com/LHTOFFICAL/KIGTTS/releases/download/APP0.1.1%E5%8F%91%E8%A1%8C%E7%89%88/app-release.apk' },
-      { label: '从华为应用市场下载', icon: 'storefront', href: 'https://appgallery.huawei.com/app/C117576039?sharePrepath=ag&channelId=%E5%AE%98%E6%96%B9%E7%BD%91%E7%AB%99&id=fafcf6ee7f5f4097bdd660bc8be21563&s=08BD28653FBBD05CDB82E8345EE55350DFC37CD4FAFE57F7F1281EB7D890CA2E&detailType=0&v=&callType=AGDLINK&installType=0000&shareTo=qrcode', primary: true },
-      { label: '从应用宝下载', icon: 'shop', href: 'https://a.app.qq.com/o/simple.jsp?pkgname=com.lhtstudio.kigtts.app', primary: true },
-      { label: '查看发行页', icon: 'open_in_new', href: androidReleaseUrl },
+      actions: [
+        { label: '魔搭下载', icon: 'modelscope', href: modelscopeApkUrl, primary: true },
+        { label: '从 GitHub 下载', icon: 'github', href: androidApkUrl },
+        { label: '从华为应用市场下载', icon: 'appgallery', href: 'https://appgallery.huawei.com/app/C117576039?sharePrepath=ag&channelId=%E5%AE%98%E6%96%B9%E7%BD%91%E7%AB%99&id=fafcf6ee7f5f4097bdd660bc8be21563&s=08BD28653FBBD05CDB82E8345EE55350DFC37CD4FAFE57F7F1281EB7D890CA2E&detailType=0&v=&callType=AGDLINK&installType=0000&shareTo=qrcode', primary: true },
+        { label: '从应用宝下载', icon: 'yingyongbao', href: 'https://a.app.qq.com/o/simple.jsp?pkgname=com.lhtstudio.kigtts.app', primary: true },
+        { label: '查看发行页', icon: 'open_in_new', href: androidReleaseUrl },
     ],
   },
   {
@@ -145,8 +146,8 @@ export const downloadTabs = [
     ],
     bullets: ['国内用户建议先选魔搭', '下载较慢时再试 Hugging Face', '解压后按界面引导启动训练器'],
     actions: [
-      { label: '魔搭下载', icon: 'deployed_code', href: trainerModelScopeUrl, primary: true },
-      { label: 'Hugging Face', icon: 'hub', href: trainerHuggingFaceUrl },
+      { label: '魔搭下载', icon: 'modelscope', href: trainerModelScopeUrl, primary: true },
+      { label: 'Hugging Face', icon: 'huggingface', href: trainerHuggingFaceUrl },
     ],
   },
   // TODO: Flutter Beta 页面暂时禁用，后续启用时取消注释 ↓

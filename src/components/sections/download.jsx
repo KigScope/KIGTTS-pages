@@ -12,6 +12,36 @@ const qrFadeIn = keyframes`
   to { opacity: 1; transform: translateY(0); }
 `;
 
+const brandActionIcons = {
+  github: './logos/github.svg',
+  modelscope: './logos/modelscope.svg',
+  appgallery: './logos/appgallery.svg',
+  yingyongbao: './logos/yingyongbao.svg',
+  huggingface: './logos/huggingface.svg',
+};
+
+function DownloadActionIcon({ name, size = 20 }) {
+  const src = brandActionIcons[name];
+  if (!src) {
+    return <SymbolIcon name={name} size={size} />;
+  }
+
+  return (
+    <Box
+      component="img"
+      src={src}
+      alt=""
+      sx={{
+        width: size,
+        height: size,
+        display: 'block',
+        flexShrink: 0,
+        objectFit: 'contain',
+      }}
+    />
+  );
+}
+
 export function DownloadSection({ activeTabId: activeTabIdProp, onTabChange }) {
   const [localActiveTabId, setLocalActiveTabId] = useState(downloadTabs[0].id);
   const [hoveredAction, setHoveredAction] = useState(-1);
@@ -336,26 +366,26 @@ export function DownloadSection({ activeTabId: activeTabIdProp, onTabChange }) {
 
                 <Stack spacing={1}>
                   {currentDownload.actions.map((action, idx) => {
-                    // Group GitHub + Gitee into one row for Android
+                    // Group 魔搭 + GitHub into one row for Android
                     const isAndroidPair = currentDownload.id === 'android' && idx === 0;
                     if (isAndroidPair) {
-                      const gh = action;
-                      const gitee = currentDownload.actions[1];
+                      const modelscope = action;
+                      const github = currentDownload.actions[1];
                       return (
-                        <Stack direction="row" spacing={1} key="gh-gitee-row">
-                          <Button fullWidth component="a" href={gh.href} target="_blank" rel="noopener noreferrer"
-                            startIcon={<SymbolIcon name={gh.icon} size={20} />}
+                        <Stack direction="row" spacing={1} key="modelscope-github-row">
+                          <Button fullWidth component="a" href={modelscope.href} target="_blank" rel="noopener noreferrer"
+                            startIcon={<DownloadActionIcon name={modelscope.icon} size={20} />}
                             onMouseEnter={() => (setHoveredAction(0), setQrAction(0))}
                             onMouseLeave={() => setHoveredAction(-1)}
                             sx={{ ...md2Button, flex: 1, minWidth: 0, minHeight: { xs: 46, sm: 54 }, justifyContent: 'center', borderRadius: 0.7, fontSize: { xs: '0.8rem', sm: '0.95rem' } }}>
-                            {gh.label}
+                            {modelscope.label}
                           </Button>
-                          <Button fullWidth component="a" href={gitee.href} target="_blank" rel="noopener noreferrer"
-                            startIcon={<SymbolIcon name={gitee.icon} size={20} />}
+                          <Button fullWidth component="a" href={github.href} target="_blank" rel="noopener noreferrer"
+                            startIcon={<DownloadActionIcon name={github.icon} size={20} />}
                             onMouseEnter={() => (setHoveredAction(1), setQrAction(1))}
                             onMouseLeave={() => setHoveredAction(-1)}
                             sx={{ ...md2Button, flex: 1, minWidth: 0, minHeight: { xs: 46, sm: 54 }, justifyContent: 'center', borderRadius: 0.7, fontSize: { xs: '0.8rem', sm: '0.95rem' } }}>
-                            {gitee.label}
+                            {github.label}
                           </Button>
                         </Stack>
                       );
@@ -369,14 +399,14 @@ export function DownloadSection({ activeTabId: activeTabIdProp, onTabChange }) {
                       return (
                         <Stack direction="row" spacing={1} key="store-row">
                           <Button fullWidth component="a" href={huawei.href} target="_blank" rel="noopener noreferrer"
-                            startIcon={<SymbolIcon name={huawei.icon} size={20} />}
+                            startIcon={<DownloadActionIcon name={huawei.icon} size={20} />}
                             onMouseEnter={() => (setHoveredAction(2), setQrAction(2))}
                             onMouseLeave={() => setHoveredAction(-1)}
                             sx={{ ...md2Button, flex: 1, minWidth: 0, minHeight: { xs: 46, sm: 54 }, justifyContent: 'center', borderRadius: 0.7, fontSize: { xs: '0.8rem', sm: '0.95rem' } }}>
                             {huawei.label}
                           </Button>
                           <Button fullWidth component="a" href={yyb.href} target="_blank" rel="noopener noreferrer"
-                            startIcon={<SymbolIcon name={yyb.icon} size={20} />}
+                            startIcon={<DownloadActionIcon name={yyb.icon} size={20} />}
                             onMouseEnter={() => (setHoveredAction(3), setQrAction(3))}
                             onMouseLeave={() => setHoveredAction(-1)}
                             sx={{ ...md2Button, flex: 1, minWidth: 0, minHeight: { xs: 46, sm: 54 }, justifyContent: 'center', borderRadius: 0.7, fontSize: { xs: '0.8rem', sm: '0.95rem' } }}>
@@ -395,7 +425,7 @@ export function DownloadSection({ activeTabId: activeTabIdProp, onTabChange }) {
                       target={action.href ? '_blank' : undefined}
                       rel={action.href ? 'noopener noreferrer' : undefined}
                       disabled={action.disabled}
-                      startIcon={<SymbolIcon name={action.icon} size={24} />}
+                      startIcon={<DownloadActionIcon name={action.icon} size={24} />}
                       onMouseEnter={() => currentDownload.id === 'android' ? (setHoveredAction(idx), setQrAction(idx)) : null}
                       onMouseLeave={() => setHoveredAction(-1)}
                       sx={{
